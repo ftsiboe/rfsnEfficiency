@@ -1,0 +1,33 @@
+Package: rfsnEfficiency
+Title: Risk-Reduction Efficacy and Efficiency of Risk-Management Configurations
+Version: 0.0.0.9000
+Authors@R:
+    person("Francis", "Tsiboe", email = "ftsiboe@hotmail.com", role = c("aut", "cre"))
+Description: A general, on-demand toolkit for evaluating risk-management or
+    safety-net configurations. From user-supplied end-of-season outcome draws
+    (ideally one element per agent) and program parameters (cost, premium,
+    subsidy, and an indemnification rule that may be a function), it builds a
+    configurable outcome (revenue, profit, margin, or a custom / cost-side
+    measure) relative to a no-program baseline and computes efficacy scores
+    (mean lift, variability reduction) and a risk-reduction efficiency ratio,
+    with comparisons across regimes or scenarios. Implements the
+    risk-reduction-efficiency metric of Tsiboe et al. (2025).
+License: GPL (>= 3)
+Encoding: UTF-8
+LazyData: true
+Imports:
+    data.table,
+    stats,
+    utils
+Suggests:
+    testthat (>= 3.0.0),
+    piggyback,
+    usethis,
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
+Config/testthat/edition: 3
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.3
+Depends: 
+    R (>= 3.5)

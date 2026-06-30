@@ -1,0 +1,279 @@
+---
+title: "Why net farm income is an incomplete yardstick for the farm safety net"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Why net farm income is an incomplete yardstick for the farm safety net}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", eval = FALSE)
+```
+
+## The question this package answers
+
+How well is the farm safety net working? In U.S. policy discussion the de facto
+answer is **annual net farm income (NFI)**, the headline sector aggregate that
+USDA's Economic Research Service forecasts and that commentators track to judge
+the "health" of the farm economy and, by extension, the programs that support it
+(USDA-ERS, n.d.-a). Yet the stated purpose of those programs is not to raise the
+average so much as to **manage risk**, that is, to dampen the year-to-year
+variability of farm outcomes (Glauber, 2004; Coble & Barnett, 2013; Hardaker,
+Lien, Anderson, & Huirne, 2015).
+
+NFI is indispensable for what it was designed to do: summarize the sector's
+income in a year. But as a *leading indicator for the safety net* it is
+**incomplete**, because it does not measure what the safety net is for, and as a
+single aggregate it obscures how outcomes are distributed across heterogeneous
+farms (Mishra, El-Osta, Morehart, Johnson, & Hopkins, 2002). This vignette lays
+out the complementary indicator that fills that gap. It draws on a connected
+research program: farm-level evaluation of risk-reducing instruments (Tsiboe,
+Tack, & Yu, 2023); large-scale calibration of the farm-level yields needed to do
+so (Tsiboe, Turner, & Yu, 2025); the risk-reduction metrics themselves (Tsiboe et
+al., 2025); the evaluation of program *combinations* (Gaku & Tsiboe, 2025); and
+prospective assessment of proposed instruments (Tsiboe & Turner, 2025). The
+final section shows how `rfsnEfficiency` operationalizes it.
+
+## What is a farm safety-net instrument?
+
+A **farm safety-net instrument** is any program or contract that moves income to
+a producer in adverse states of the world, conditioned on a yield loss, a price
+or revenue shortfall, or a disaster, in order to **stabilize farm outcomes**
+(Glauber, 2004; Hardaker et al., 2015). Operationally, an instrument is defined
+by four primitives:
+
+1. a **trigger**: the adverse event that activates a payment (a farm yield below
+   a guarantee, a county revenue below a benchmark, a declared disaster);
+2. an **indemnity / payment rule**: how the payment maps to the shortfall;
+3. a **producer cost**: a (often subsidized) premium or fee, or none; and
+4. a **risk scope**: the pool over which losses are recognized, namely
+   farm-level, county / area, or national.
+
+The scope primitive is consequential, not cosmetic. Area- and index-based
+triggers economize on information but introduce **basis risk**, the wedge
+between the index and the farm's own outcome, which can sharply limit (or even
+reverse) an instrument's farm-level risk reduction (Tsiboe et al., 2023). These
+four primitives are exactly the inputs `rfsnEfficiency` takes (outcome draws,
+plus an indemnity rule that may be a function, plus `cost` / `premium` /
+`subsidy`), so any instrument, existing or proposed, can be scored on the same
+footing.
+
+## The U.S. farm safety net: current scope
+
+Using the United States as context, federal programs span three groups (see the
+[USFarmSafetyNetLab](https://github.com/ftsiboe/USFarmSafetyNetLab); CRS, 2021;
+Glauber, 2004):
+
+1. **Farm-specific risk management**: the Federal Crop Insurance Program (FCIP)
+   and the Noninsured Crop Disaster Assistance Program (NAP), administered by
+   USDA's Risk Management Agency (USDA-RMA, n.d.). Producers pay (subsidized)
+   premiums; triggers are farm- or area-level yield/revenue outcomes. FCIP is the
+   largest instrument and is itself layered (basic yield and revenue plans, unit
+   structures, coverage levels, options, and supplemental endorsements such as
+   SCO and ECO), and its premium subsidies are large enough that participation
+   and design are shaped as much by the subsidy as by risk (Coble & Barnett,
+   2013; Du, Feng, & Hennessy, 2017; ARPC, n.d.).
+2. **Regional or national risk coverage**: Price Loss Coverage (PLC) and
+   Agriculture Risk Coverage (ARC) under Title I, alongside marketing-loan and
+   standing disaster programs. Producers pay no premium; triggers are national
+   or county price/revenue benchmarks.
+3. **Ad-hoc disaster assistance**: temporary, premium-free programs responding to
+   events not well covered by the first two groups, for example pandemic- or
+   trade-related assistance and large disaster packages.
+
+Because a producer typically holds a **combination** across these groups (say, a
+revenue FCIP policy plus PLC and, in a shock year, ad-hoc aid), the safety net's
+performance is a property of the *combination*, not of any single instrument.
+That is the central insight of combination-strategy evaluation (Gaku & Tsiboe,
+2025). The menu is also not fixed: proposed instruments, such as a buy-up tier
+for PLC, can be assessed *before* enactment for the risk reduction they would
+deliver and at what cost (Tsiboe & Turner, 2025). Either way, evaluation requires
+scoring configurable instruments on the same realized draws.
+
+## Why NFI is an incomplete yardstick for the safety net
+
+A risk-management program exists to **reduce the variability** of farm outcomes,
+to convert volatile, loss-prone years into something steadier, not merely to
+raise the average (Hardaker et al., 2015). Judging it by NFI alone leaves four
+gaps:
+
+1. **It targets the level, not the risk.** NFI tracks the mean. A program could
+   leave mean income unchanged yet sharply cut its year-to-year swings, exactly
+   the success a safety net is meant to deliver, and NFI would not move. Risk,
+   moreover, is asymmetric: producers care chiefly about downside shortfalls
+   below a target, which mean-level statistics ignore (Fishburn, 1977; Hardaker
+   et al., 2015).
+2. **It is an aggregate.** A single national figure hides the distribution,
+   namely which crops, regions, and operations actually had their risk reduced
+   and which did not, a long-standing limitation of sector-level income measures
+   (Mishra et al., 2002). Farm-level evaluation is required to recover it
+   (Tsiboe et al., 2023).
+3. **It is partly circular.** NFI *includes* government payments (USDA-ERS,
+   n.d.-b), so a more expensive program mechanically raises the very number used
+   to judge it, regardless of whether it stabilized anything; this is sharpened
+   by the fact that subsidies function in part as income transfers rather than
+   pure risk protection (Coble & Barnett, 2013; Du et al., 2017).
+4. **It is ex post and confounded.** Realized NFI mixes program effects with
+   prices, weather, and macro conditions, so it cannot isolate the marginal
+   contribution of a given configuration. Disentangling it requires a
+   counterfactual, representative-agent comparison against a no-program baseline,
+   which is feasible only with farm-level calibrated outcomes (Tsiboe, Turner, &
+   Yu, 2025; Tsiboe et al., 2025).
+
+## The alternative: efficacy and efficiency of risk reduction
+
+Tsiboe et al. (2025) formalize the safety net's job as a comparison between the
+distribution of a farm outcome **with** the program and the counterfactual
+**without** it (the no-program baseline). Two questions follow.
+
+**Efficacy, or does it work?** Two indices, each relative to the no-program
+baseline (so `1` = no effect):
+
+- **Income Transfer Score (ITS)**: the ratio of mean outcome with vs. without
+  the program. `ITS > 1` means the program lifts the mean.
+- **Variability Reduction Score (VRS)**: the ratio of an outcome-variability
+  measure with vs. without the program. `VRS < 1` means it cuts variability.
+  Because downside risk is what producers price, the package reports VRS not only
+  on the coefficient of variation but also on loss-side (below-mean) partial
+  moments (Fishburn, 1977).
+
+A configuration "reduces risk" only when it does **both**: `ITS > 1` *and*
+`VRS < 1`.
+
+**Efficiency, or is it worth it?** The **Risk-Reduction Efficiency Ratio
+(RRER)**, Equation (3) of Tsiboe et al. (2025):
+
+$$
+\text{RRER} \;=\; \mathbb{1}(\text{VRS}<1)\,\mathbb{1}(\text{ITS}>1)\;
+\frac{1-\text{VRS}}{\text{ITS}-1}.
+$$
+
+RRER is the **variability reduction achieved per unit of income (outcome)
+transferred**. It deflates the stabilization a program delivers by how much it
+had to move the mean to get there. A program that simply hands out money every
+year raises the mean a lot for little genuine stabilization and earns a *low*
+RRER; a program that converts each transferred dollar into a large reduction in
+volatility earns a *high* one. The same per-dollar logic underlies the
+cost-effectiveness comparison of a proposed PLC buy-up tier in Tsiboe & Turner
+(2025). Crucially, RRER is defined only when the configuration is already
+efficacious: efficiency presumes efficacy.
+
+## What risk-reduction efficiency adds
+
+| Property | Annual NFI | Risk-Reduction Efficiency |
+|---|---|---|
+| Measures risk (variability) | No (level only) | **Yes** |
+| Captures downside / shortfall risk | No | **Yes** (Fishburn, 1977) |
+| Distributional (by crop/region/agent) | No (aggregate) | **Yes** (Tsiboe et al., 2023) |
+| Isolates the program's marginal effect | No (confounded) | **Yes** (vs. baseline) |
+| Compares alternative configurations | No | **Yes** (Gaku & Tsiboe, 2025) |
+| Independent of program spending | No (includes payments) | **Yes** (spending is the denominator, by design) |
+| Forward / counterfactual capable | No (ex post) | **Yes** (Tsiboe & Turner, 2025) |
+
+In short, RRER reports **how much risk reduction the safety net buys per dollar
+it moves**, agent by agent. That is precisely the question a *risk-management*
+program should be judged on, and precisely the dimension NFI leaves out. It does
+not displace NFI; it completes the picture.
+
+## How `rfsnEfficiency` operationalizes it
+
+The package is program-agnostic: you supply each agent's end-of-season outcome
+draws and the program parameters (an indemnity rule that may be a function, plus
+cost/premium/subsidy), and it returns the scores and regime comparisons. The
+outcome draws can come from calibrated farm-level yields of the kind developed in
+Tsiboe, Turner, & Yu (2025).
+
+```{r}
+library(rfsnEfficiency)
+data(toy_outcomes)   # built from the calibrated_yield release; see data-raw/
+
+# Score a configuration and compare two regimes against the same draws
+res <- run_efficiency_analysis(
+  data = toy_outcomes, by = "group_id",
+  outcome_args = list(base_value = "outcome", transfers = "indemnity",
+                      premium = "premium"),
+  ref = "baseline", alt = "reform")
+
+res$scores   # ITS (mean_index), VRS (risk_index), RRER (efficiency) per regime
+res$deltas   # reform - baseline for every score
+```
+
+Because the **outcome is configurable** (revenue, profit, margin, or a cost-side
+measure), the same indicator can be reported on whichever farm outcome a policy
+audience cares about, without changing the metric.
+
+## What NFI still does well
+
+This is not an argument to discard NFI. As a macro accounting aggregate it
+remains the right tool for tracking sector income and budget exposure (USDA-ERS,
+n.d.-a). The claim is narrower: **NFI is an incomplete yardstick for the safety
+net, and a risk-reduction-efficiency indicator supplies the missing piece**, a
+direct, distributional measure of the safety net's core function, reducing
+farm-level risk efficiently. It can be computed retrospectively as a report card
+and prospectively to compare reforms before they are enacted, on the same
+realized shocks (Gaku & Tsiboe, 2025; Tsiboe & Turner, 2025; Tsiboe et al.,
+2025).
+
+## References
+
+Agricultural Risk Policy Center (ARPC). (n.d.). *Federal Crop Insurance Program
+backgrounders and policy reports.* North Dakota State University.
+<https://github.com/ftsiboe/arpcFCIPHarness>
+
+Coble, K. H., & Barnett, B. J. (2013). Why do we subsidize crop insurance?
+*American Journal of Agricultural Economics, 95*(2), 498–504.
+<https://doi.org/10.1093/ajae/aas093>
+
+Congressional Research Service (CRS). (2021). *Federal crop insurance: A primer*
+(Report R46686). <https://www.congress.gov/crs-product/R46686>
+
+Du, X., Feng, H., & Hennessy, D. A. (2017). Rationality of choices in subsidized
+crop insurance markets. *American Journal of Agricultural Economics, 99*(3),
+732–756. <https://doi.org/10.1093/ajae/aaw035>
+
+Fishburn, P. C. (1977). Mean-risk analysis with risk associated with below-target
+returns. *American Economic Review, 67*(2), 116–126.
+
+Gaku, S., & Tsiboe, F. (2025). Evaluation of alternative farm safety net program
+combination strategies. *Agricultural Finance Review, 85*(2), 254–273.
+<https://doi.org/10.1108/AFR-11-2023-0150>
+
+Glauber, J. W. (2004). Crop insurance reconsidered. *American Journal of
+Agricultural Economics, 86*(5), 1179–1195.
+<https://doi.org/10.1111/j.0002-9092.2004.00663.x>
+
+Hardaker, J. B., Lien, G., Anderson, J. R., & Huirne, R. B. M. (2015). *Coping
+with risk in agriculture: Applied decision analysis* (3rd ed.). CABI.
+
+Mishra, A. K., El-Osta, H. S., Morehart, M. J., Johnson, J. D., & Hopkins, J. W.
+(2002). *Income, wealth, and the economic well-being of farm households*
+(Agricultural Economic Report No. 812). USDA Economic Research Service.
+
+Tsiboe, F., Tack, J., & Yu, J. (2023). Farm-level evaluation of area- and
+agroclimatic-based index insurance. *Journal of the Agricultural and Applied
+Economics Association, 2*(4), 616–633. <https://doi.org/10.1002/jaa2.77>
+
+Tsiboe, F., Turner, D., & Yu, J. (2025). Utilizing large-scale insurance data
+sets to calibrate sub-county level crop yields. *Journal of Risk and Insurance,
+92*(1), 139–165. <https://doi.org/10.1111/jori.12494>
+
+Tsiboe, F., Turner, D., Williams, B., Miller, M., Baldwin, K., & Dohlman, E.
+(2025). Risk reduction impacts of crop insurance in the United States. *Applied
+Economic Perspectives and Policy, 47*(5), 1832–1847.
+<https://doi.org/10.1002/aepp.13513>
+
+Tsiboe, F., & Turner, D. (2025). Incorporating buy-up price loss coverage into
+the United States farm safety net. *Applied Economic Perspectives and Policy,
+47.* <https://doi.org/10.1002/aepp.13536>
+
+U.S. Department of Agriculture, Economic Research Service (USDA-ERS). (n.d.-a).
+*Farm sector income and finances.*
+<https://www.ers.usda.gov/topics/farm-economy/farm-sector-income-finances>
+
+U.S. Department of Agriculture, Economic Research Service (USDA-ERS). (n.d.-b).
+*Farm income and wealth statistics.*
+<https://www.ers.usda.gov/data-products/farm-income-and-wealth-statistics>
+
+U.S. Department of Agriculture, Risk Management Agency (USDA-RMA). (n.d.).
+*Summary of Business and program information.* <https://www.rma.usda.gov>

@@ -1,0 +1,11 @@
+# RStudio cruft
+.Rproj.user/
+.Rhistory
+.RData
+.Ruserdata
+
+data-raw/*
+fastscratch/*
+
+
+
