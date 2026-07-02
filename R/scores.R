@@ -87,6 +87,52 @@ compute_efficiency_scores <- function(data, by,
   r[]
 }
 
+#' Summarise producer-level scores into robust group summaries
+#'
+#' Collapses the per-producer score table from \code{compute_efficiency_scores()}
+#' to one row per \code{by} group, reporting robust (trimmed-mean) and median
+#' summaries of the three headline metrics plus the share of producers that
+#' genuinely reduce risk. A few producers with near-zero baseline revenue
+#' produce extreme indices, so the means are trimmed (see \code{\link{trim_mean}});
+#' the medians are reported alongside as a robustness check. Every summary
+#' accepts an optional \code{weight} column, so results can be expressed per
+#' acre, per dollar of liability, or per simulation weight rather than per
+#' producer.
+#'
+#' @param dt data.table of per-producer scores (from
+#'   \code{compute_efficiency_scores()}); must contain \code{mean_index},
+#'   \code{risk_index}, \code{efficiency}, and \code{reduces_risk}.
+#' @param by character vector of grouping columns, or \code{NULL} for a single
+#'   overall summary.
+#' @param weight optional name of a numeric weight column in \code{dt}.
+#'   \code{NULL} (default) weights every producer equally; when supplied, the
+#'   trimmed means, medians, and risk-reducing share are all weighted by it.
+#' @param lo,hi trimming quantile cut points forwarded to \code{\link{trim_mean}}.
+#' @return data.table, one row per \code{by} group, with \code{n_producers},
+#'   trimmed-mean \code{mean_index}/\code{risk_index}/\code{efficiency}, their
+#'   \code{med_*} medians, and \code{pct_reduces_risk}.
+#' @seealso \code{\link{compute_efficiency_scores}}, \code{\link{trim_mean}}
+#' @export
+summarise_scores <- function(dt, by, weight = NULL, lo = 0.005, hi = 0.995) {
+  data.table::setDT(dt)
+  stopifnot(all(c("mean_index", "risk_index", "efficiency", "reduces_risk") %in% names(dt)))
+  if (!is.null(weight)) stopifnot(weight %in% names(dt))
+
+  dt[, {
+    w <- if (is.null(weight)) NULL else get(weight)
+    list(
+      n_producers      = .N,
+      mean_index       = trim_mean(mean_index, lo, hi, w),   # ITS (trimmed mean)
+      risk_index       = trim_mean(risk_index, lo, hi, w),   # VRS
+      efficiency       = trim_mean(efficiency, lo, hi, w),   # RRER
+      med_mean_index   = robust_median(mean_index, w),
+      med_risk_index   = robust_median(risk_index, w),
+      med_efficiency   = robust_median(efficiency, w),
+      pct_reduces_risk = 100 * flag_rate(reduces_risk, w)
+    )
+  }, by = by]
+}
+
 #' Crosswalk: intuitive names <-> legacy / source-pipeline column names
 #'
 #' Maps the package's intuitive score names to the terse column names used by

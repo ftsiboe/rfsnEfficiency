@@ -45,3 +45,43 @@ test_that("run_efficiency_analysis produces scores and regime deltas", {
   expect_true(!is.null(res$deltas))
   expect_true("delta" %in% names(res$deltas))
 })
+
+test_that("trim_mean trims tails and supports weights", {
+  x <- c(1, 2, 3, 4, 1000)
+  # At the 10th/90th pctiles both tails are cut (1 and 1000) -> mean(2:4).
+  expect_equal(trim_mean(x, lo = 0.10, hi = 0.90), mean(2:4))
+  # Non-finite values are ignored; empty input -> NA.
+  expect_equal(trim_mean(c(2, 4, NA, Inf), lo = 0, hi = 1), 3)
+  expect_true(is.na(trim_mean(numeric(0))))
+  # Equal weights reproduce the unweighted trimmed mean.
+  expect_equal(trim_mean(x, lo = 0.10, hi = 0.90, weights = rep(1, 5)),
+               trim_mean(x, lo = 0.10, hi = 0.90))
+  # A zero weight on an observation is equivalent to removing it.
+  expect_equal(trim_mean(c(1, 2, 3, 100), lo = 0, hi = 1,
+                         weights = c(1, 1, 1, 0)),
+               2)
+})
+
+test_that("summarise_scores collapses scores and honours weights", {
+  d <- simulate_example_outcomes(n_groups = 6, n_draws = 200, seed = 7)
+  d <- build_outcome(d, base_value = "outcome", transfers = "indemnity", premium = "premium")
+  s <- compute_efficiency_scores(d, by = c("group_id", "scenario", "regime"))
+
+  out <- summarise_scores(s, by = "scenario")
+  expect_true(all(c("n_producers", "mean_index", "risk_index", "efficiency",
+                    "med_mean_index", "med_risk_index", "med_efficiency",
+                    "pct_reduces_risk") %in% names(out)))
+  expect_equal(nrow(out), length(unique(s$scenario)))
+  expect_true(all(out$pct_reduces_risk >= 0 & out$pct_reduces_risk <= 100))
+
+  # by = NULL -> single overall row.
+  expect_equal(nrow(summarise_scores(s, by = NULL)), 1L)
+
+  # Constant weights reproduce the unweighted summary.
+  s[, wt := 1]
+  expect_equal(summarise_scores(s, by = "scenario", weight = "wt")$mean_index,
+               summarise_scores(s, by = "scenario")$mean_index)
+
+  # Unknown weight column is rejected.
+  expect_error(summarise_scores(s, by = "scenario", weight = "not_a_col"))
+})

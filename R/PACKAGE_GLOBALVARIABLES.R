@@ -18,6 +18,7 @@ PACKAGE_GLOBALVARIABLES <- Filter(nzchar, strsplit(
   risk_reduction_pct_shortfall
   efficiency efficiency_downside efficiency_shortfall
   regime metric value delta cv lapv lrpv nlapv nlrpv ploss var x
+  n_producers med_mean_index med_risk_index med_efficiency pct_reduces_risk
   ",
   "\\s+"
 )[[1]])
