@@ -87,50 +87,103 @@ compute_efficiency_scores <- function(data, by,
   r[]
 }
 
+#' Canonical column names emitted by compute_efficiency_scores()
+#'
+#' Returns the score / indicator column names produced by
+#' \code{\link{compute_efficiency_scores}}, grouped by how they should be
+#' summarised: continuous \code{scores} (indices, efficiency, percent
+#' transforms), the baseline/safety-net \code{moments}, and the logical
+#' \code{flags}. Used as the default column set by \code{\link{summarise_scores}}
+#' and available for callers that want to summarise or difference the same set.
+#'
+#' @return named list with character vectors \code{scores}, \code{moments}, and
+#'   \code{flags}.
+#' @export
+efficiency_score_columns <- function() {
+  list(
+    scores = c("mean_index", "sd_index", "var_index", "cv_index",
+               "downside_index", "shortfall_index", "downside_index_n", "shortfall_index_n",
+               "risk_index", "risk_index_downside", "risk_index_shortfall",
+               "efficiency", "efficiency_downside", "efficiency_shortfall",
+               "mean_gain_pct", "risk_reduction_pct",
+               "risk_reduction_pct_downside", "risk_reduction_pct_shortfall"),
+    moments = as.vector(t(outer(
+      c("mean", "sd", "var", "cv", "lapv", "lrpv", "nlapv", "nlrpv", "ploss"),
+      c("base", "sn"), paste, sep = "_"))),
+    flags = c("mean_gain_flag", "risk_reduction_flag",
+              "risk_reduction_flag_downside", "risk_reduction_flag_shortfall",
+              "reduces_risk")
+  )
+}
+
 #' Summarise producer-level scores into robust group summaries
 #'
 #' Collapses the per-producer score table from \code{compute_efficiency_scores()}
-#' to one row per \code{by} group, reporting robust (trimmed-mean) and median
-#' summaries of the three headline metrics plus the share of producers that
-#' genuinely reduce risk. A few producers with near-zero baseline revenue
-#' produce extreme indices, so the means are trimmed (see \code{\link{trim_mean}});
-#' the medians are reported alongside as a robustness check. Every summary
-#' accepts an optional \code{weight} column, so results can be expressed per
-#' acre, per dollar of liability, or per simulation weight rather than per
-#' producer.
+#' to one row per \code{by} group. By default it summarises \strong{every} score,
+#' indicator, percent transform, and moment the scorer produces: each continuous
+#' metric \code{m} yields a robust (trimmed) mean kept as \code{m} plus its median
+#' \code{med_m}, and each logical flag \code{f} yields the share (percent) of the
+#' group flagged, \code{pct_f}. A few producers with near-zero baseline revenue
+#' produce extreme indices, so the means are trimmed (see \code{\link{trim_mean}})
+#' and the medians reported alongside as a robustness check. Every summary accepts
+#' an optional \code{weight} column, so results can be expressed per acre, per
+#' dollar of liability, or per simulation weight rather than per producer.
+#'
+#' Which columns are summarised is discovered from
+#' \code{\link{efficiency_score_columns}} intersected with the columns actually
+#' present, so non-score columns (identifiers, group codes, the weight) are
+#' ignored automatically. Pass \code{metrics}/\code{flags} to override.
 #'
 #' @param dt data.table of per-producer scores (from
-#'   \code{compute_efficiency_scores()}); must contain \code{mean_index},
-#'   \code{risk_index}, \code{efficiency}, and \code{reduces_risk}.
+#'   \code{compute_efficiency_scores()}).
 #' @param by character vector of grouping columns, or \code{NULL} for a single
 #'   overall summary.
 #' @param weight optional name of a numeric weight column in \code{dt}.
 #'   \code{NULL} (default) weights every producer equally; when supplied, the
-#'   trimmed means, medians, and risk-reducing share are all weighted by it.
+#'   trimmed means, medians, and flag shares are all weighted by it.
 #' @param lo,hi trimming quantile cut points forwarded to \code{\link{trim_mean}}.
-#' @return data.table, one row per \code{by} group, with \code{n_producers},
-#'   trimmed-mean \code{mean_index}/\code{risk_index}/\code{efficiency}, their
-#'   \code{med_*} medians, and \code{pct_reduces_risk}.
-#' @seealso \code{\link{compute_efficiency_scores}}, \code{\link{trim_mean}}
+#' @param metrics optional character vector of continuous columns to summarise.
+#'   \code{NULL} (default) uses the scores (and, if \code{include_moments},
+#'   moments) from \code{\link{efficiency_score_columns}} that are present in
+#'   \code{dt}.
+#' @param flags optional character vector of logical/0-1 columns to report as
+#'   \code{pct_*} shares. \code{NULL} (default) uses the flags from
+#'   \code{\link{efficiency_score_columns}} present in \code{dt}.
+#' @param medians whether to also report a \code{med_*} median for every metric
+#'   (default \code{TRUE}).
+#' @param include_moments whether to include the baseline/safety-net
+#'   \code{*_base}/\code{*_sn} moments among the default metrics (default
+#'   \code{TRUE}).
+#' @return data.table, one row per \code{by} group, with \code{n_producers}, a
+#'   trimmed mean for every metric, a \code{med_*} median for every metric (when
+#'   \code{medians}), and a \code{pct_*} share for every flag.
+#' @seealso \code{\link{compute_efficiency_scores}}, \code{\link{efficiency_score_columns}},
+#'   \code{\link{trim_mean}}
 #' @export
-summarise_scores <- function(dt, by, weight = NULL, lo = 0.005, hi = 0.995) {
+summarise_scores <- function(dt, by, weight = NULL, lo = 0.005, hi = 0.995,
+                             metrics = NULL, flags = NULL, medians = TRUE,
+                             include_moments = TRUE) {
   data.table::setDT(dt)
-  stopifnot(all(c("mean_index", "risk_index", "efficiency", "reduces_risk") %in% names(dt)))
   if (!is.null(weight)) stopifnot(weight %in% names(dt))
 
+  cols <- efficiency_score_columns()
+  if (is.null(metrics)) {
+    metrics <- intersect(c(cols$scores, if (include_moments) cols$moments), names(dt))
+  }
+  if (is.null(flags)) flags <- intersect(cols$flags, names(dt))
+
   dt[, {
-    w <- if (is.null(weight)) NULL else get(weight)
-    list(
-      n_producers      = .N,
-      mean_index       = trim_mean(mean_index, lo, hi, w),   # ITS (trimmed mean)
-      risk_index       = trim_mean(risk_index, lo, hi, w),   # VRS
-      efficiency       = trim_mean(efficiency, lo, hi, w),   # RRER
-      med_mean_index   = robust_median(mean_index, w),
-      med_risk_index   = robust_median(risk_index, w),
-      med_efficiency   = robust_median(efficiency, w),
-      pct_reduces_risk = 100 * flag_rate(reduces_risk, w)
-    )
-  }, by = by]
+    w  <- if (is.null(weight)) NULL else get(weight)
+    Mv <- .SD[, metrics, with = FALSE]
+    Fv <- .SD[, flags,   with = FALSE]
+    means <- lapply(Mv, trim_mean, lo, hi, w)
+    meds  <- if (medians && length(metrics))
+      stats::setNames(lapply(Mv, robust_median, w), paste0("med_", metrics))
+    pcts  <- if (length(flags))
+      stats::setNames(lapply(Fv, function(col) 100 * flag_rate(col, w)),
+                      paste0("pct_", flags))
+    c(list(n_producers = .N), means, meds, pcts)
+  }, by = by, .SDcols = c(metrics, flags)]
 }
 
 #' Crosswalk: intuitive names <-> legacy / source-pipeline column names

@@ -4,38 +4,71 @@
 \alias{summarise_scores}
 \title{Summarise producer-level scores into robust group summaries}
 \usage{
-summarise_scores(dt, by, weight = NULL, lo = 0.005, hi = 0.995)
+summarise_scores(
+  dt,
+  by,
+  weight = NULL,
+  lo = 0.005,
+  hi = 0.995,
+  metrics = NULL,
+  flags = NULL,
+  medians = TRUE,
+  include_moments = TRUE
+)
 }
 \arguments{
 \item{dt}{data.table of per-producer scores (from
-\code{compute_efficiency_scores()}); must contain \code{mean_index},
-\code{risk_index}, \code{efficiency}, and \code{reduces_risk}.}
+\code{compute_efficiency_scores()}).}
 
 \item{by}{character vector of grouping columns, or \code{NULL} for a single
 overall summary.}
 
 \item{weight}{optional name of a numeric weight column in \code{dt}.
 \code{NULL} (default) weights every producer equally; when supplied, the
-trimmed means, medians, and risk-reducing share are all weighted by it.}
+trimmed means, medians, and flag shares are all weighted by it.}
 
 \item{lo, hi}{trimming quantile cut points forwarded to \code{\link{trim_mean}}.}
+
+\item{metrics}{optional character vector of continuous columns to summarise.
+\code{NULL} (default) uses the scores (and, if \code{include_moments},
+moments) from \code{\link{efficiency_score_columns}} that are present in
+\code{dt}.}
+
+\item{flags}{optional character vector of logical/0-1 columns to report as
+\code{pct_*} shares. \code{NULL} (default) uses the flags from
+\code{\link{efficiency_score_columns}} present in \code{dt}.}
+
+\item{medians}{whether to also report a \code{med_*} median for every metric
+(default \code{TRUE}).}
+
+\item{include_moments}{whether to include the baseline/safety-net
+\code{*_base}/\code{*_sn} moments among the default metrics (default
+\code{TRUE}).}
 }
 \value{
-data.table, one row per \code{by} group, with \code{n_producers},
-trimmed-mean \code{mean_index}/\code{risk_index}/\code{efficiency}, their
-\code{med_*} medians, and \code{pct_reduces_risk}.
+data.table, one row per \code{by} group, with \code{n_producers}, a
+trimmed mean for every metric, a \code{med_*} median for every metric (when
+\code{medians}), and a \code{pct_*} share for every flag.
 }
 \description{
 Collapses the per-producer score table from \code{compute_efficiency_scores()}
-to one row per \code{by} group, reporting robust (trimmed-mean) and median
-summaries of the three headline metrics plus the share of producers that
-genuinely reduce risk. A few producers with near-zero baseline revenue
-produce extreme indices, so the means are trimmed (see \code{\link{trim_mean}});
-the medians are reported alongside as a robustness check. Every summary
-accepts an optional \code{weight} column, so results can be expressed per
-acre, per dollar of liability, or per simulation weight rather than per
-producer.
+to one row per \code{by} group. By default it summarises \strong{every} score,
+indicator, percent transform, and moment the scorer produces: each continuous
+metric \code{m} yields a robust (trimmed) mean kept as \code{m} plus its median
+\code{med_m}, and each logical flag \code{f} yields the share (percent) of the
+group flagged, \code{pct_f}. A few producers with near-zero baseline revenue
+produce extreme indices, so the means are trimmed (see \code{\link{trim_mean}})
+and the medians reported alongside as a robustness check. Every summary accepts
+an optional \code{weight} column, so results can be expressed per acre, per
+dollar of liability, or per simulation weight rather than per producer.
+}
+\details{
+Which columns are summarised is discovered from
+\code{\link{efficiency_score_columns}} intersected with the columns actually
+present, so non-score columns (identifiers, group codes, the weight) are
+ignored automatically. Pass \code{metrics}/\code{flags} to override.
 }
 \seealso{
-\code{\link{compute_efficiency_scores}}, \code{\link{trim_mean}}
+\code{\link{compute_efficiency_scores}}, \code{\link{efficiency_score_columns}},
+\code{\link{trim_mean}}
 }

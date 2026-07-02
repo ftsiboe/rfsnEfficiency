@@ -68,20 +68,37 @@ test_that("summarise_scores collapses scores and honours weights", {
   s <- compute_efficiency_scores(d, by = c("group_id", "scenario", "regime"))
 
   out <- summarise_scores(s, by = "scenario")
-  expect_true(all(c("n_producers", "mean_index", "risk_index", "efficiency",
-                    "med_mean_index", "med_risk_index", "med_efficiency",
-                    "pct_reduces_risk") %in% names(out)))
+  cols <- efficiency_score_columns()
+  # Every metric is summarised (mean + median) and every flag as a pct_* share.
+  expect_true(all(c("n_producers", cols$scores, cols$moments) %in% names(out)))
+  expect_true(all(paste0("med_", c(cols$scores, cols$moments)) %in% names(out)))
+  expect_true(all(paste0("pct_", cols$flags) %in% names(out)))
   expect_equal(nrow(out), length(unique(s$scenario)))
   expect_true(all(out$pct_reduces_risk >= 0 & out$pct_reduces_risk <= 100))
+
+  # Dropping moments and medians shrinks the output as requested.
+  lean <- summarise_scores(s, by = "scenario", medians = FALSE, include_moments = FALSE)
+  expect_false(any(cols$moments %in% names(lean)))
+  expect_false(any(grepl("^med_", names(lean))))
+  expect_true(all(cols$scores %in% names(lean)))
 
   # by = NULL -> single overall row.
   expect_equal(nrow(summarise_scores(s, by = NULL)), 1L)
 
-  # Constant weights reproduce the unweighted summary.
+  # Constant weights reproduce the unweighted summary (all metric means).
   s[, wt := 1]
-  expect_equal(summarise_scores(s, by = "scenario", weight = "wt")$mean_index,
-               summarise_scores(s, by = "scenario")$mean_index)
+  wtd <- summarise_scores(s, by = "scenario", weight = "wt")
+  unw <- summarise_scores(s, by = "scenario")
+  for (m in c(cols$scores, cols$moments)) expect_equal(wtd[[m]], unw[[m]])
 
   # Unknown weight column is rejected.
   expect_error(summarise_scores(s, by = "scenario", weight = "not_a_col"))
+})
+
+test_that("score_dictionary documents every scored column", {
+  skip_if_not(exists("score_dictionary"))   # built by data-raw/scripts/build_score_dictionary.R
+  expect_setequal(names(score_dictionary),
+                  c("variable", "group", "description", "calculation", "interpretation"))
+  cols <- efficiency_score_columns()
+  expect_true(all(c(cols$scores, cols$moments, cols$flags) %in% score_dictionary$variable))
 })

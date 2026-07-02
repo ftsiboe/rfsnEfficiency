@@ -19,6 +19,12 @@ PACKAGE_GLOBALVARIABLES <- Filter(nzchar, strsplit(
   efficiency efficiency_downside efficiency_shortfall
   regime metric value delta cv lapv lrpv nlapv nlrpv ploss var x
   n_producers med_mean_index med_risk_index med_efficiency pct_reduces_risk
+  underlying_indemnity_amount underlying_liability_amount underlying_total_premium_amount
+  approved_yield yield_farm harvest_price projected_price coverage_level_percent
+  insurance_plan_code expected_county_yield final_county_yield
+  supplemental_liability_amount supplemental_total_premium_amount
+  supplemental_subsidy_amount supplemental_indemnity_amount
+  scenario component scale
   ",
   "\\s+"
 )[[1]])

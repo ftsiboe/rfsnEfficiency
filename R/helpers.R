@@ -44,6 +44,8 @@ weighted_quantile <- function(x, w, probs) {
   keep <- is.finite(x) & is.finite(w) & w > 0
   x <- x[keep]; w <- w[keep]
   if (!length(x)) return(rep(NA_real_, length(probs)))
+  # approx() needs >= 2 points; a single distinct value is its own quantile.
+  if (length(unique(x)) < 2L) return(rep(x[1], length(probs)))
   o <- order(x); x <- x[o]; w <- w[o]
   cw <- (cumsum(w) - 0.5 * w) / sum(w)
   stats::approx(cw, x, xout = probs, rule = 2, ties = "ordered")$y
