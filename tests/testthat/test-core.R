@@ -131,6 +131,22 @@ test_that("ITS and VRS clamp finite ratios but keep NA for undefined ones", {
   expect_true(all(s3$cv_index >= 0.10 & s3$cv_index <= 2, na.rm = TRUE))
 })
 
+test_that("calc_insurance_payment_rate returns loss-triggered rates in [0,1]", {
+  pr <- function(fy) calc_insurance_payment_rate(
+    expected_yield = 100, final_yield = fy, harvest_price = 5,
+    price_election_amount = 5, projected_price = 5, trigger_index = 0.85,
+    coverage_range = 1, insurance_plan_code = 1)$payment_rate
+  expect_equal(pr(100), 0)      # no loss -> no payment
+  expect_equal(pr(50),  0.35)   # 50% yield -> 0.85 - 0.50
+  expect_equal(pr(0),   0.85)   # total loss -> capped at trigger
+  # Vectorized and bounded to [0, 1].
+  v <- calc_insurance_payment_rate(
+    expected_yield = 100, final_yield = c(120, 85, 0), harvest_price = 5,
+    price_election_amount = 5, projected_price = 5, trigger_index = 0.85,
+    coverage_range = 1, insurance_plan_code = 1)$payment_rate
+  expect_true(all(v >= 0 & v <= 1))
+})
+
 test_that("RRER deadband/cap bound the efficiency score", {
   # Default deadband 0.05: a mean gain below it yields 0 (guards the ITS->1 blowup).
   expect_equal(risk_reduction_efficiency(1.001, 0.5), 0)

@@ -1,8 +1,7 @@
 # Draw-level net-benefit builders for Monte-Carlo safety-net simulation
 # (Tsiboe, Biram & Hagerman 2026). Both operate in place on a data.table that
 # has been exploded to one row per agent x draw (see explode_draws()), and both
-# derive a loss-contingent indemnity from
-# arpcFCIPcalc::arpc_fcip_calc_payment_rate():
+# derive a loss-contingent indemnity from calc_insurance_payment_rate():
 #   * simulate_basic_policy_net_benefit() -> individual (farm) policy, farm draw
 #   * simulate_supplemental_net_benefit() -> area (county) SCO/ECO, pool draw
 
@@ -36,7 +35,7 @@ simulate_basic_policy_net_benefit <- function(
     indemnity_label = NULL
 ){
   if(! "underlying_indemnity_amount" %in% names(data)){
-    data[, underlying_indemnity_amount := underlying_liability_amount * arpcFCIPcalc::arpc_fcip_calc_payment_rate(
+    data[, underlying_indemnity_amount := underlying_liability_amount * calc_insurance_payment_rate(
       expected_yield        = approved_yield,
       final_yield           = yield_farm,
       harvest_price         = harvest_price,
@@ -106,7 +105,7 @@ simulate_supplemental_net_benefit <- function(
 
   data[, supplemental_subsidy_amount := supplemental_total_premium_amount*get(subsidy_percent)]
 
-  data[, supplemental_indemnity_amount := supplemental_liability_amount * arpcFCIPcalc::arpc_fcip_calc_payment_rate(
+  data[, supplemental_indemnity_amount := supplemental_liability_amount * calc_insurance_payment_rate(
     expected_yield        = expected_county_yield,
     final_yield           = final_county_yield,
     harvest_price         = harvest_price,
