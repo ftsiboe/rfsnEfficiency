@@ -4,14 +4,19 @@
 \alias{variability_reduction_score}
 \title{Variability Reduction Score (VRS)}
 \usage{
-variability_reduction_score(treated_var, baseline_var)
+variability_reduction_score(treated_var, baseline_var, clamp = c(0.1, 2))
 }
 \arguments{
 \item{treated_var, baseline_var}{numeric vectors of the variability measure
 with and without the safety net.}
+
+\item{clamp}{optional length-2 numeric \code{c(lower, upper)} to winsorize the
+ratio into (guards against a near-zero baseline variability blowing the
+ratio up). \code{NULL} leaves the raw ratio. Defaults to \code{c(0.10, 2)}.}
 }
 \value{
-numeric vector (non-finite ratios returned as \code{NA}).
+numeric vector (non-finite ratios returned as \code{NA}; finite values
+clamped to \code{clamp} when supplied).
 }
 \description{
 Ratio of an outcome-variability measure with the safety net to the measure

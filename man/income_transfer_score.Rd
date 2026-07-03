@@ -4,14 +4,19 @@
 \alias{income_transfer_score}
 \title{Income Transfer Score (ITS)}
 \usage{
-income_transfer_score(treated_mean, baseline_mean)
+income_transfer_score(treated_mean, baseline_mean, clamp = c(0.1, 2))
 }
 \arguments{
 \item{treated_mean, baseline_mean}{numeric vectors of mean outcomes with and
 without the safety net.}
+
+\item{clamp}{optional length-2 numeric \code{c(lower, upper)} to winsorize the
+ratio into (guards against a near-zero baseline mean blowing the ratio up).
+\code{NULL} leaves the raw ratio. Defaults to \code{c(0.10, 2)}.}
 }
 \value{
-numeric vector (non-finite ratios returned as \code{NA}).
+numeric vector (non-finite ratios returned as \code{NA}; finite values
+clamped to \code{clamp} when supplied).
 }
 \description{
 Ratio of the expected outcome with the safety net to the expected outcome

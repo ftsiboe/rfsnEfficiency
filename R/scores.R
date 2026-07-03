@@ -15,13 +15,30 @@
 #'   e.g., agent identifiers x combination).
 #' @param outcome_baseline,outcome_treated column names of the no-safety-net and
 #'   with-safety-net outcome series.
+#' @param its_clamp length-2 numeric `c(lower, upper)` winsorizing the income
+#'   transfer score (`mean_index`); passed to `income_transfer_score()`. `NULL`
+#'   leaves it unclamped. Default `c(0.10, 2)`.
+#' @param vrs_clamp length-2 numeric `c(lower, upper)` winsorizing every
+#'   variability reduction score (`cv_index` and the downside/shortfall flavors);
+#'   passed to `variability_reduction_score()`. `NULL` leaves them unclamped.
+#'   Default `c(0.10, 2)`. Independent of `its_clamp`.
+#' @param eff_deadband minimum proportional mean gain (`mean_index - 1`) required
+#'   before an efficiency (RRER) score is nonzero; passed to
+#'   `risk_reduction_efficiency()`. Guards the `ITS -> 1` singularity and bounds
+#'   `efficiency*` at `1 / eff_deadband`. Default `0.05`; `0` for raw Eq. (3).
+#' @param eff_cap optional hard upper bound on the efficiency scores (`NULL` =
+#'   none), passed to `risk_reduction_efficiency()`.
 #' @return data.table, one row per `by` group, with moments (`*_base`/`*_sn`),
 #'   relative indices (`*_index`), headline scores (`mean_index`, `risk_index`,
 #'   `efficiency`), flags, percent transforms, and the downside/shortfall flavors.
 #' @export
 compute_efficiency_scores <- function(data, by,
                                       outcome_baseline = "outcome_baseline",
-                                      outcome_treated  = "outcome_treated") {
+                                      outcome_treated  = "outcome_treated",
+                                      its_clamp = c(0.10, 2),
+                                      vrs_clamp = c(0.10, 2),
+                                      eff_deadband = 0.05,
+                                      eff_cap = NULL) {
   data.table::setDT(data)
   stopifnot(all(c(by, outcome_baseline, outcome_treated) %in% names(data)))
   safe_div <- function(n, d) { r <- n / d; r[!is.finite(r) | d == 0] <- NA_real_; r }
@@ -51,14 +68,14 @@ compute_efficiency_scores <- function(data, by,
 
   # Relative indices (treated / baseline; 1 = no safety net).
   # mean_index = ITS (Eq. 2); the variability indices are VRS flavors.
-  r[, mean_index        := income_transfer_score(mean_sn, mean_base)]
+  r[, mean_index        := income_transfer_score(mean_sn, mean_base, clamp = its_clamp)]
   r[, sd_index          := safe_div(sd_sn,  sd_base)]
   r[, var_index         := safe_div(var_sn, var_base)]
-  r[, cv_index          := variability_reduction_score(cv_sn,    cv_base)]
-  r[, downside_index    := variability_reduction_score(lapv_sn,  lapv_base)]
-  r[, shortfall_index   := variability_reduction_score(lrpv_sn,  lrpv_base)]
-  r[, downside_index_n  := variability_reduction_score(nlapv_sn, nlapv_base)]
-  r[, shortfall_index_n := variability_reduction_score(nlrpv_sn, nlrpv_base)]
+  r[, cv_index          := variability_reduction_score(cv_sn,    cv_base,  clamp = vrs_clamp)]
+  r[, downside_index    := variability_reduction_score(lapv_sn,  lapv_base,  clamp = vrs_clamp)]
+  r[, shortfall_index   := variability_reduction_score(lrpv_sn,  lrpv_base,  clamp = vrs_clamp)]
+  r[, downside_index_n  := variability_reduction_score(nlapv_sn, nlapv_base, clamp = vrs_clamp)]
+  r[, shortfall_index_n := variability_reduction_score(nlrpv_sn, nlrpv_base, clamp = vrs_clamp)]
 
   # Headline efficacy (variability) flavors
   r[, risk_index           := cv_index]
@@ -81,9 +98,9 @@ compute_efficiency_scores <- function(data, by,
   # Efficiency (RRER, Eq. 3): risk reduction per unit of outcome gained. The
   # generic risk_reduction_efficiency() applies both indicator conditions, so it
   # is 0 unless the configuration lifts the mean and cuts the relevant variability.
-  r[, efficiency           := risk_reduction_efficiency(mean_index, cv_index)]
-  r[, efficiency_downside  := risk_reduction_efficiency(mean_index, downside_index_n)]
-  r[, efficiency_shortfall := risk_reduction_efficiency(mean_index, shortfall_index_n)]
+  r[, efficiency           := risk_reduction_efficiency(mean_index, cv_index,         deadband = eff_deadband, cap = eff_cap)]
+  r[, efficiency_downside  := risk_reduction_efficiency(mean_index, downside_index_n, deadband = eff_deadband, cap = eff_cap)]
+  r[, efficiency_shortfall := risk_reduction_efficiency(mean_index, shortfall_index_n, deadband = eff_deadband, cap = eff_cap)]
   r[]
 }
 

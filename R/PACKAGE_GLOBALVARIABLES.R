@@ -25,6 +25,7 @@ PACKAGE_GLOBALVARIABLES <- Filter(nzchar, strsplit(
   supplemental_liability_amount supplemental_total_premium_amount
   supplemental_subsidy_amount supplemental_indemnity_amount
   scenario component scale
+  .n_cov n_valid_before n_after retention_count retention_weight
   ",
   "\\s+"
 )[[1]])

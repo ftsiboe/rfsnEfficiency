@@ -8,7 +8,11 @@ compute_efficiency_scores(
   data,
   by,
   outcome_baseline = "outcome_baseline",
-  outcome_treated = "outcome_treated"
+  outcome_treated = "outcome_treated",
+  its_clamp = c(0.1, 2),
+  vrs_clamp = c(0.1, 2),
+  eff_deadband = 0.05,
+  eff_cap = NULL
 )
 }
 \arguments{
@@ -21,6 +25,23 @@ e.g., agent identifiers x combination).}
 
 \item{outcome_baseline, outcome_treated}{column names of the no-safety-net and
 with-safety-net outcome series.}
+
+\item{its_clamp}{length-2 numeric \code{c(lower, upper)} winsorizing the income
+transfer score (\code{mean_index}); passed to \code{income_transfer_score()}. \code{NULL}
+leaves it unclamped. Default \code{c(0.10, 2)}.}
+
+\item{vrs_clamp}{length-2 numeric \code{c(lower, upper)} winsorizing every
+variability reduction score (\code{cv_index} and the downside/shortfall flavors);
+passed to \code{variability_reduction_score()}. \code{NULL} leaves them unclamped.
+Default \code{c(0.10, 2)}. Independent of \code{its_clamp}.}
+
+\item{eff_deadband}{minimum proportional mean gain (\code{mean_index - 1}) required
+before an efficiency (RRER) score is nonzero; passed to
+\code{risk_reduction_efficiency()}. Guards the \code{ITS -> 1} singularity and bounds
+\verb{efficiency*} at \code{1 / eff_deadband}. Default \code{0.05}; \code{0} for raw Eq. (3).}
+
+\item{eff_cap}{optional hard upper bound on the efficiency scores (\code{NULL} =
+none), passed to \code{risk_reduction_efficiency()}.}
 }
 \value{
 data.table, one row per \code{by} group, with moments (\verb{*_base}/\verb{*_sn}),

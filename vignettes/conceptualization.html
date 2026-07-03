@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Why net farm income is an incomplete yardstick for the farm safety net</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Why net farm income is an incomplete
+yardstick for the farm safety net</h1>
+
+
+
+<div id="the-question-this-package-answers" class="section level2">
+<h2>The question this package answers</h2>
+<p>How well is the farm safety net working? In U.S. policy discussion
+the de facto answer is <strong>annual net farm income (NFI)</strong>,
+the headline sector aggregate that USDA’s Economic Research Service
+forecasts and that commentators track to judge the “health” of the farm
+economy and, by extension, the programs that support it (USDA-ERS,
+n.d.-a). Yet the stated purpose of those programs is not to raise the
+average so much as to <strong>manage risk</strong>, that is, to dampen
+the year-to-year variability of farm outcomes (Glauber, 2004; Coble
+&amp; Barnett, 2013; Hardaker, Lien, Anderson, &amp; Huirne, 2015).</p>
+<p>NFI is indispensable for what it was designed to do: summarize the
+sector’s income in a year. But as a <em>leading indicator for the safety
+net</em> it is <strong>incomplete</strong>, because it does not measure
+what the safety net is for, and as a single aggregate it obscures how
+outcomes are distributed across heterogeneous farms (Mishra, El-Osta,
+Morehart, Johnson, &amp; Hopkins, 2002). This vignette lays out the
+complementary indicator that fills that gap. It draws on a connected
+research program: farm-level evaluation of risk-reducing instruments
+(Tsiboe, Tack, &amp; Yu, 2023); large-scale calibration of the
+farm-level yields needed to do so (Tsiboe, Turner, &amp; Yu, 2025); the
+risk-reduction metrics themselves (Tsiboe et al., 2025); the evaluation
+of program <em>combinations</em> (Gaku &amp; Tsiboe, 2025); and
+prospective assessment of proposed instruments (Tsiboe &amp; Turner,
+2025). The final section shows how <code>rfsnEfficiency</code>
+operationalizes it.</p>
+</div>
+<div id="what-is-a-farm-safety-net-instrument" class="section level2">
+<h2>What is a farm safety-net instrument?</h2>
+<p>A <strong>farm safety-net instrument</strong> is any program or
+contract that moves income to a producer in adverse states of the world,
+conditioned on a yield loss, a price or revenue shortfall, or a
+disaster, in order to <strong>stabilize farm outcomes</strong> (Glauber,
+2004; Hardaker et al., 2015). Operationally, an instrument is defined by
+four primitives:</p>
+<ol style="list-style-type: decimal">
+<li>a <strong>trigger</strong>: the adverse event that activates a
+payment (a farm yield below a guarantee, a county revenue below a
+benchmark, a declared disaster);</li>
+<li>an <strong>indemnity / payment rule</strong>: how the payment maps
+to the shortfall;</li>
+<li>a <strong>producer cost</strong>: a (often subsidized) premium or
+fee, or none; and</li>
+<li>a <strong>risk scope</strong>: the pool over which losses are
+recognized, namely farm-level, county / area, or national.</li>
+</ol>
+<p>The scope primitive is consequential, not cosmetic. Area- and
+index-based triggers economize on information but introduce
+<strong>basis risk</strong>, the wedge between the index and the farm’s
+own outcome, which can sharply limit (or even reverse) an instrument’s
+farm-level risk reduction (Tsiboe et al., 2023). These four primitives
+are exactly the inputs <code>rfsnEfficiency</code> takes (outcome draws,
+plus an indemnity rule that may be a function, plus <code>cost</code> /
+<code>premium</code> / <code>subsidy</code>), so any instrument,
+existing or proposed, can be scored on the same footing.</p>
+</div>
+<div id="the-u.s.-farm-safety-net-current-scope" class="section level2">
+<h2>The U.S. farm safety net: current scope</h2>
+<p>Using the United States as context, federal programs span three
+groups (see the <a href="https://github.com/ftsiboe/USFarmSafetyNetLab">USFarmSafetyNetLab</a>;
+CRS, 2021; Glauber, 2004):</p>
+<ol style="list-style-type: decimal">
+<li><strong>Farm-specific risk management</strong>: the Federal Crop
+Insurance Program (FCIP) and the Noninsured Crop Disaster Assistance
+Program (NAP), administered by USDA’s Risk Management Agency (USDA-RMA,
+n.d.). Producers pay (subsidized) premiums; triggers are farm- or
+area-level yield/revenue outcomes. FCIP is the largest instrument and is
+itself layered (basic yield and revenue plans, unit structures, coverage
+levels, options, and supplemental endorsements such as SCO and ECO), and
+its premium subsidies are large enough that participation and design are
+shaped as much by the subsidy as by risk (Coble &amp; Barnett, 2013; Du,
+Feng, &amp; Hennessy, 2017; ARPC, n.d.).</li>
+<li><strong>Regional or national risk coverage</strong>: Price Loss
+Coverage (PLC) and Agriculture Risk Coverage (ARC) under Title I,
+alongside marketing-loan and standing disaster programs. Producers pay
+no premium; triggers are national or county price/revenue
+benchmarks.</li>
+<li><strong>Ad-hoc disaster assistance</strong>: temporary, premium-free
+programs responding to events not well covered by the first two groups,
+for example pandemic- or trade-related assistance and large disaster
+packages.</li>
+</ol>
+<p>Because a producer typically holds a <strong>combination</strong>
+across these groups (say, a revenue FCIP policy plus PLC and, in a shock
+year, ad-hoc aid), the safety net’s performance is a property of the
+<em>combination</em>, not of any single instrument. That is the central
+insight of combination-strategy evaluation (Gaku &amp; Tsiboe, 2025).
+The menu is also not fixed: proposed instruments, such as a buy-up tier
+for PLC, can be assessed <em>before</em> enactment for the risk
+reduction they would deliver and at what cost (Tsiboe &amp; Turner,
+2025). Either way, evaluation requires scoring configurable instruments
+on the same realized draws.</p>
+</div>
+<div id="why-nfi-is-an-incomplete-yardstick-for-the-safety-net" class="section level2">
+<h2>Why NFI is an incomplete yardstick for the safety net</h2>
+<p>A risk-management program exists to <strong>reduce the
+variability</strong> of farm outcomes, to convert volatile, loss-prone
+years into something steadier, not merely to raise the average (Hardaker
+et al., 2015). Judging it by NFI alone leaves four gaps:</p>
+<ol style="list-style-type: decimal">
+<li><strong>It targets the level, not the risk.</strong> NFI tracks the
+mean. A program could leave mean income unchanged yet sharply cut its
+year-to-year swings, exactly the success a safety net is meant to
+deliver, and NFI would not move. Risk, moreover, is asymmetric:
+producers care chiefly about downside shortfalls below a target, which
+mean-level statistics ignore (Fishburn, 1977; Hardaker et al.,
+2015).</li>
+<li><strong>It is an aggregate.</strong> A single national figure hides
+the distribution, namely which crops, regions, and operations actually
+had their risk reduced and which did not, a long-standing limitation of
+sector-level income measures (Mishra et al., 2002). Farm-level
+evaluation is required to recover it (Tsiboe et al., 2023).</li>
+<li><strong>It is partly circular.</strong> NFI <em>includes</em>
+government payments (USDA-ERS, n.d.-b), so a more expensive program
+mechanically raises the very number used to judge it, regardless of
+whether it stabilized anything; this is sharpened by the fact that
+subsidies function in part as income transfers rather than pure risk
+protection (Coble &amp; Barnett, 2013; Du et al., 2017).</li>
+<li><strong>It is ex post and confounded.</strong> Realized NFI mixes
+program effects with prices, weather, and macro conditions, so it cannot
+isolate the marginal contribution of a given configuration.
+Disentangling it requires a counterfactual, representative-agent
+comparison against a no-program baseline, which is feasible only with
+farm-level calibrated outcomes (Tsiboe, Turner, &amp; Yu, 2025; Tsiboe
+et al., 2025).</li>
+</ol>
+</div>
+<div id="the-alternative-efficacy-and-efficiency-of-risk-reduction" class="section level2">
+<h2>The alternative: efficacy and efficiency of risk reduction</h2>
+<p>Tsiboe et al. (2025) formalize the safety net’s job as a comparison
+between the distribution of a farm outcome <strong>with</strong> the
+program and the counterfactual <strong>without</strong> it (the
+no-program baseline). Two questions follow.</p>
+<p><strong>Efficacy, or does it work?</strong> Two indices, each
+relative to the no-program baseline (so <code>1</code> = no effect):</p>
+<ul>
+<li><strong>Income Transfer Score (ITS)</strong>: the ratio of mean
+outcome with vs. without the program. <code>ITS &gt; 1</code> means the
+program lifts the mean.</li>
+<li><strong>Variability Reduction Score (VRS)</strong>: the ratio of an
+outcome-variability measure with vs. without the program.
+<code>VRS &lt; 1</code> means it cuts variability. Because downside risk
+is what producers price, the package reports VRS not only on the
+coefficient of variation but also on loss-side (below-mean) partial
+moments (Fishburn, 1977).</li>
+</ul>
+<p>A configuration “reduces risk” only when it does
+<strong>both</strong>: <code>ITS &gt; 1</code> <em>and</em>
+<code>VRS &lt; 1</code>.</p>
+<p><strong>Efficiency, or is it worth it?</strong> The
+<strong>Risk-Reduction Efficiency Ratio (RRER)</strong>, Equation (3) of
+Tsiboe et al. (2025):</p>
+<p><span class="math display">\[
+\text{RRER} \;=\;
+\mathbb{I}(\text{VRS}&lt;1)\,\mathbb{1}(\text{ITS}&gt;1)\;
+\frac{1-\text{VRS}}{\text{ITS}-1}.
+\]</span></p>
+<p>RRER is the <strong>variability reduction achieved per unit of income
+(outcome) transferred</strong>. It deflates the stabilization a program
+delivers by how much it had to move the mean to get there. A program
+that simply hands out money every year raises the mean a lot for little
+genuine stabilization and earns a <em>low</em> RRER; a program that
+converts each transferred dollar into a large reduction in volatility
+earns a <em>high</em> one. The same per-dollar logic underlies the
+cost-effectiveness comparison of a proposed PLC buy-up tier in Tsiboe
+&amp; Turner (2025). Crucially, RRER is defined only when the
+configuration is already efficacious: efficiency presumes efficacy.</p>
+</div>
+<div id="keeping-the-indices-well-posed-economic-bounds" class="section level2">
+<h2>Keeping the indices well-posed: economic bounds</h2>
+<p>ITS, VRS, and RRER are all ratios, so an agent whose no-program
+baseline has a mean or variability near zero can push an index to an
+implausible magnitude that reflects a vanishing denominator rather than
+any economic effect. Across a Monte-Carlo of <span class="math inline">\(\sim\!10^{5}\)</span> heterogeneous agents, a
+handful of such degenerate cases would otherwise dominate the weighted
+or trimmed aggregates. To keep the indicators well-posed,
+<code>rfsnEfficiency</code> winsorizes each index into an economically
+feasible envelope (arguments <code>its_clamp</code>,
+<code>vrs_clamp</code>, and the RRER <code>deadband</code> /
+<code>cap</code>), pulling the degenerate agents to the edge of the
+plausible range instead of letting them set the headline. The defaults,
+and the economic priors behind them, are:</p>
+<table>
+<colgroup>
+<col width="25%" />
+<col width="25%" />
+<col width="25%" />
+<col width="25%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Index</th>
+<th>Bound</th>
+<th>Default</th>
+<th>Economic reason</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>ITS (<code>mean_index</code>)</td>
+<td>floor</td>
+<td>0.10</td>
+<td>Subsidized insurance cannot collapse mean revenue</td>
+</tr>
+<tr class="even">
+<td>ITS (<code>mean_index</code>)</td>
+<td>cap</td>
+<td>2.00</td>
+<td>Transfers are a modest share of revenue; the mean cannot double</td>
+</tr>
+<tr class="odd">
+<td>VRS (<code>cv_index</code>, downside, shortfall)</td>
+<td>floor</td>
+<td>0.10</td>
+<td>Partial coverage and basis risk leave irreducible residual risk</td>
+</tr>
+<tr class="even">
+<td>VRS (<code>cv_index</code>, downside, shortfall)</td>
+<td>cap</td>
+<td>2.00</td>
+<td>Insurance may add noise, but not multiply variability</td>
+</tr>
+<tr class="odd">
+<td>RRER (<code>efficiency</code>)</td>
+<td>floor</td>
+<td>0.00</td>
+<td>Zero unless the program both lifts the mean and cuts risk
+(definitional)</td>
+</tr>
+<tr class="even">
+<td>RRER (<code>efficiency</code>)</td>
+<td>max</td>
+<td><span class="math inline">\(1/\text{deadband}\approx
+18\text{–}20\)</span></td>
+<td>Efficiency is undefined near a zero income transfer</td>
+</tr>
+</tbody>
+</table>
+<p>Index by index:</p>
+<ol style="list-style-type: decimal">
+<li><strong>ITS floor (0.10).</strong> Participation in a subsidized
+program is rational only when the expected net benefit is non-negative,
+so premium subsidies roughly offset the loading and <span class="math inline">\(\mathbb{E}[\text{indemnity}+\text{subsidy}]\ge\)</span>
+the producer premium (Coble &amp; Barnett, 2013; Du et al., 2017). A
+functioning program therefore lifts, or at worst barely dents, mean
+revenue; an ITS of 0.10 would mean it destroyed 90% of expected revenue,
+which can only arise from a baseline mean near zero.</li>
+<li><strong>ITS cap (2.00).</strong> Premiums are single-digit
+percentages of liability and subsidies cover roughly 60% of premium, so
+the mean uplift is on the order of a few percent. Because indemnities
+are bounded by liability (<span class="math inline">\(\approx\)</span>
+coverage <span class="math inline">\(\times\)</span> expected revenue),
+the mean simply cannot double; <span class="math inline">\(\text{ITS}\gg
+1.5\)</span> signals a micro-baseline artifact.</li>
+<li><strong>VRS floor (0.10).</strong> Coverage tops out at <span class="math inline">\(\le 90\%\)</span>, deductibles remain, and area
+endorsements (SCO/ECO) carry basis risk between the county pool and the
+farm (Tsiboe et al., 2023). That irreducible residual means variability
+cannot be driven to zero; the floor (“at most <span class="math inline">\(\sim\!90\%\)</span> of variability removed”) is
+consistent with partial coverage and basis risk.</li>
+<li><strong>VRS cap (2.00).</strong> Insurance can add variance in small
+doses (premium outflow in good years; area basis risk), so mild <span class="math inline">\(\text{VRS}&gt;1\)</span> is admitted, but doubling
+revenue variability is already extreme and larger values are
+tiny-baseline artifacts.</li>
+<li><strong>RRER floor (0).</strong> By Equation (3) the score is zero
+unless the configuration both lifts the mean and cuts variability, so
+non-negativity is built in, not imposed.</li>
+<li><strong>RRER deadband (0.05).</strong> RRER divides the proportional
+risk reduction by the proportional income gain, so as the mean gain
+<span class="math inline">\(\text{ITS}-1\to 0\)</span> the ratio
+explodes: a program that stabilizes with essentially no transfer looks
+infinitely efficient. Economically, a mean gain below <span class="math inline">\(\sim\!5\%\)</span> is within the noise of the
+transfer mechanism and is not a meaningful cost basis to divide by;
+requiring <span class="math inline">\(\text{ITS}-1\ge 0.05\)</span>
+before rating efficiency removes that singularity and mechanically
+bounds the score at <span class="math inline">\(1/0.05=20\)</span>
+(about 18 given the VRS floor).</li>
+</ol>
+<p>These guardrails complement, rather than replace, the robust
+aggregation the package already uses: the clamps fix per-agent artifacts
+at the source, trimmed means with medians reported alongside handle the
+group aggregation, and the ITS deadband removes the one remaining
+singularity (RRER as <span class="math inline">\(\text{ITS}\to
+1\)</span>). All are optional; set the argument to <code>NULL</code> (or
+<code>deadband = 0</code>) to recover the raw Equation (3)
+behaviour.</p>
+</div>
+<div id="what-risk-reduction-efficiency-adds" class="section level2">
+<h2>What risk-reduction efficiency adds</h2>
+<table>
+<colgroup>
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Property</th>
+<th>Annual NFI</th>
+<th>Risk-Reduction Efficiency</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Measures risk (variability)</td>
+<td>No (level only)</td>
+<td><strong>Yes</strong></td>
+</tr>
+<tr class="even">
+<td>Captures downside / shortfall risk</td>
+<td>No</td>
+<td><strong>Yes</strong> (Fishburn, 1977)</td>
+</tr>
+<tr class="odd">
+<td>Distributional (by crop/region/agent)</td>
+<td>No (aggregate)</td>
+<td><strong>Yes</strong> (Tsiboe et al., 2023)</td>
+</tr>
+<tr class="even">
+<td>Isolates the program’s marginal effect</td>
+<td>No (confounded)</td>
+<td><strong>Yes</strong> (vs. baseline)</td>
+</tr>
+<tr class="odd">
+<td>Compares alternative configurations</td>
+<td>No</td>
+<td><strong>Yes</strong> (Gaku &amp; Tsiboe, 2025)</td>
+</tr>
+<tr class="even">
+<td>Independent of program spending</td>
+<td>No (includes payments)</td>
+<td><strong>Yes</strong> (spending is the denominator, by design)</td>
+</tr>
+<tr class="odd">
+<td>Forward / counterfactual capable</td>
+<td>No (ex post)</td>
+<td><strong>Yes</strong> (Tsiboe &amp; Turner, 2025)</td>
+</tr>
+</tbody>
+</table>
+<p>In short, RRER reports <strong>how much risk reduction the safety net
+buys per dollar it moves</strong>, agent by agent. That is precisely the
+question a <em>risk-management</em> program should be judged on, and
+precisely the dimension NFI leaves out. It does not displace NFI; it
+completes the picture.</p>
+</div>
+<div id="how-rfsnefficiency-operationalizes-it" class="section level2">
+<h2>How <code>rfsnEfficiency</code> operationalizes it</h2>
+<p>The package is program-agnostic: you supply each agent’s
+end-of-season outcome draws and the program parameters (an indemnity
+rule that may be a function, plus cost/premium/subsidy), and it returns
+the scores and regime comparisons. The outcome draws can come from
+calibrated farm-level yields of the kind developed in Tsiboe, Turner,
+&amp; Yu (2025).</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(rfsnEfficiency)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">data</span>(toy_outcomes)   <span class="co"># built from the calibrated_yield release; see data-raw/</span></span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="co"># Score a configuration and compare two regimes against the same draws</span></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">run_efficiency_analysis</span>(</span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>  <span class="at">data =</span> toy_outcomes, <span class="at">by =</span> <span class="st">&quot;group_id&quot;</span>,</span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>  <span class="at">outcome_args =</span> <span class="fu">list</span>(<span class="at">base_value =</span> <span class="st">&quot;outcome&quot;</span>, <span class="at">transfers =</span> <span class="st">&quot;indemnity&quot;</span>,</span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>                      <span class="at">premium =</span> <span class="st">&quot;premium&quot;</span>),</span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a>  <span class="at">ref =</span> <span class="st">&quot;baseline&quot;</span>, <span class="at">alt =</span> <span class="st">&quot;reform&quot;</span>)</span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a>res<span class="sc">$</span>scores   <span class="co"># ITS (mean_index), VRS (risk_index), RRER (efficiency) per regime</span></span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a>res<span class="sc">$</span>deltas   <span class="co"># reform - baseline for every score</span></span></code></pre></div>
+<p>Because the <strong>outcome is configurable</strong> (revenue,
+profit, margin, or a cost-side measure), the same indicator can be
+reported on whichever farm outcome a policy audience cares about,
+without changing the metric.</p>
+</div>
+<div id="what-nfi-still-does-well" class="section level2">
+<h2>What NFI still does well</h2>
+<p>This is not an argument to discard NFI. As a macro accounting
+aggregate it remains the right tool for tracking sector income and
+budget exposure (USDA-ERS, n.d.-a). The claim is narrower: <strong>NFI
+is an incomplete yardstick for the safety net, and a
+risk-reduction-efficiency indicator supplies the missing piece</strong>,
+a direct, distributional measure of the safety net’s core function,
+reducing farm-level risk efficiently. It can be computed retrospectively
+as a report card and prospectively to compare reforms before they are
+enacted, on the same realized shocks (Gaku &amp; Tsiboe, 2025; Tsiboe
+&amp; Turner, 2025; Tsiboe et al., 2025).</p>
+</div>
+<div id="references" class="section level2">
+<h2>References</h2>
+<p>Agricultural Risk Policy Center (ARPC). (n.d.). <em>Federal Crop
+Insurance Program backgrounders and policy reports.</em> North Dakota
+State University. <a href="https://github.com/ftsiboe/arpcFCIPHarness" class="uri">https://github.com/ftsiboe/arpcFCIPHarness</a></p>
+<p>Coble, K. H., &amp; Barnett, B. J. (2013). Why do we subsidize crop
+insurance? <em>American Journal of Agricultural Economics, 95</em>(2),
+498–504. <a href="https://doi.org/10.1093/ajae/aas093" class="uri">https://doi.org/10.1093/ajae/aas093</a></p>
+<p>Congressional Research Service (CRS). (2021). <em>Federal crop
+insurance: A primer</em> (Report R46686). <a href="https://www.congress.gov/crs-product/R46686" class="uri">https://www.congress.gov/crs-product/R46686</a></p>
+<p>Du, X., Feng, H., &amp; Hennessy, D. A. (2017). Rationality of
+choices in subsidized crop insurance markets. <em>American Journal of
+Agricultural Economics, 99</em>(3), 732–756. <a href="https://doi.org/10.1093/ajae/aaw035" class="uri">https://doi.org/10.1093/ajae/aaw035</a></p>
+<p>Fishburn, P. C. (1977). Mean-risk analysis with risk associated with
+below-target returns. <em>American Economic Review, 67</em>(2),
+116–126.</p>
+<p>Gaku, S., &amp; Tsiboe, F. (2025). Evaluation of alternative farm
+safety net program combination strategies. <em>Agricultural Finance
+Review, 85</em>(2), 254–273. <a href="https://doi.org/10.1108/AFR-11-2023-0150" class="uri">https://doi.org/10.1108/AFR-11-2023-0150</a></p>
+<p>Glauber, J. W. (2004). Crop insurance reconsidered. <em>American
+Journal of Agricultural Economics, 86</em>(5), 1179–1195. <a href="https://doi.org/10.1111/j.0002-9092.2004.00663.x" class="uri">https://doi.org/10.1111/j.0002-9092.2004.00663.x</a></p>
+<p>Hardaker, J. B., Lien, G., Anderson, J. R., &amp; Huirne, R. B. M.
+(2015). <em>Coping with risk in agriculture: Applied decision
+analysis</em> (3rd ed.). CABI.</p>
+<p>Mishra, A. K., El-Osta, H. S., Morehart, M. J., Johnson, J. D., &amp;
+Hopkins, J. W. (2002). <em>Income, wealth, and the economic well-being
+of farm households</em> (Agricultural Economic Report No. 812). USDA
+Economic Research Service.</p>
+<p>Tsiboe, F., Tack, J., &amp; Yu, J. (2023). Farm-level evaluation of
+area- and agroclimatic-based index insurance. <em>Journal of the
+Agricultural and Applied Economics Association, 2</em>(4), 616–633. <a href="https://doi.org/10.1002/jaa2.77" class="uri">https://doi.org/10.1002/jaa2.77</a></p>
+<p>Tsiboe, F., Turner, D., &amp; Yu, J. (2025). Utilizing large-scale
+insurance data sets to calibrate sub-county level crop yields.
+<em>Journal of Risk and Insurance, 92</em>(1), 139–165. <a href="https://doi.org/10.1111/jori.12494" class="uri">https://doi.org/10.1111/jori.12494</a></p>
+<p>Tsiboe, F., Turner, D., Williams, B., Miller, M., Baldwin, K., &amp;
+Dohlman, E. (2025). Risk reduction impacts of crop insurance in the
+United States. <em>Applied Economic Perspectives and Policy, 47</em>(5),
+1832–1847. <a href="https://doi.org/10.1002/aepp.13513" class="uri">https://doi.org/10.1002/aepp.13513</a></p>
+<p>Tsiboe, F., &amp; Turner, D. (2025). Incorporating buy-up price loss
+coverage into the United States farm safety net. <em>Applied Economic
+Perspectives and Policy, 47.</em> <a href="https://doi.org/10.1002/aepp.13536" class="uri">https://doi.org/10.1002/aepp.13536</a></p>
+<p>U.S. Department of Agriculture, Economic Research Service (USDA-ERS).
+(n.d.-a). <em>Farm sector income and finances.</em> <a href="https://www.ers.usda.gov/topics/farm-economy/farm-sector-income-finances" class="uri">https://www.ers.usda.gov/topics/farm-economy/farm-sector-income-finances</a></p>
+<p>U.S. Department of Agriculture, Economic Research Service (USDA-ERS).
+(n.d.-b). <em>Farm income and wealth statistics.</em> <a href="https://www.ers.usda.gov/data-products/farm-income-and-wealth-statistics" class="uri">https://www.ers.usda.gov/data-products/farm-income-and-wealth-statistics</a></p>
+<p>U.S. Department of Agriculture, Risk Management Agency (USDA-RMA).
+(n.d.). <em>Summary of Business and program information.</em> <a href="https://www.rma.usda.gov" class="uri">https://www.rma.usda.gov</a></p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

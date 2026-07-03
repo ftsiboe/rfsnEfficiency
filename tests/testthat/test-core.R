@@ -95,6 +95,111 @@ test_that("summarise_scores collapses scores and honours weights", {
   expect_error(summarise_scores(s, by = "scenario", weight = "not_a_col"))
 })
 
+test_that("ITS and VRS clamp finite ratios but keep NA for undefined ones", {
+  # Default clamp c(0.10, 2): extreme finite ratios are winsorized.
+  expect_equal(income_transfer_score(300, 100), 2)      # 3.0 -> cap 2
+  expect_equal(income_transfer_score(1, 100), 0.10)     # 0.01 -> floor 0.10
+  expect_equal(income_transfer_score(110, 100), 1.1)    # inside bounds, untouched
+  expect_equal(variability_reduction_score(50, 1), 2)   # 50 -> cap 2
+  expect_equal(variability_reduction_score(0.01, 1), 0.10)
+  expect_equal(variability_reduction_score(0.8, 1.0), 0.8)
+
+  # clamp = NULL restores the raw ratio.
+  expect_equal(income_transfer_score(300, 100, clamp = NULL), 3)
+  expect_equal(variability_reduction_score(50, 1, clamp = NULL), 50)
+
+  # Undefined ratios stay NA (a zero denominator), not clamped to a bound.
+  expect_true(is.na(income_transfer_score(1, 0)))
+  expect_true(is.na(variability_reduction_score(1, 0)))
+
+  # Clamping flows through compute_efficiency_scores, and the two clamps are
+  # independent (its_clamp vs vrs_clamp).
+  d <- simulate_example_outcomes(n_groups = 4, n_draws = 200, seed = 3)
+  d <- build_outcome(d, base_value = "outcome", transfers = "indemnity", premium = "premium")
+  s <- compute_efficiency_scores(d, by = c("group_id", "scenario", "regime"))
+  expect_true(all(s$mean_index >= 0.10 & s$mean_index <= 2, na.rm = TRUE))
+  expect_true(all(s$cv_index   >= 0.10 & s$cv_index   <= 2, na.rm = TRUE))
+
+  s2 <- compute_efficiency_scores(d, by = c("group_id", "scenario", "regime"),
+                                  its_clamp = c(0.9, 1.1), vrs_clamp = c(0, 5))
+  expect_true(all(s2$mean_index >= 0.9 & s2$mean_index <= 1.1, na.rm = TRUE))
+  expect_true(all(s2$cv_index   >= 0   & s2$cv_index   <= 5,   na.rm = TRUE))
+
+  # its_clamp = NULL leaves mean_index unclamped while vrs_clamp still binds.
+  s3 <- compute_efficiency_scores(d, by = c("group_id", "scenario", "regime"),
+                                  its_clamp = NULL, vrs_clamp = c(0.10, 2))
+  expect_true(all(s3$cv_index >= 0.10 & s3$cv_index <= 2, na.rm = TRUE))
+})
+
+test_that("RRER deadband/cap bound the efficiency score", {
+  # Default deadband 0.05: a mean gain below it yields 0 (guards the ITS->1 blowup).
+  expect_equal(risk_reduction_efficiency(1.001, 0.5), 0)
+  # deadband = 0 recovers the raw ratio (large but finite).
+  expect_equal(risk_reduction_efficiency(1.001, 0.5, deadband = 0),
+               (1 - 0.5) / (1.001 - 1))
+  # At the deadband boundary the score is bounded by 1/deadband.
+  expect_equal(risk_reduction_efficiency(1.05, 0.0, deadband = 0.05), 20)
+  expect_true(risk_reduction_efficiency(1.0000001, 0.0, deadband = 0.05) <= 20)
+  # Hard cap applies on top.
+  expect_equal(risk_reduction_efficiency(1.06, 0.10, deadband = 0.05, cap = 10), 10)
+  # The original test value is unaffected (1.05 sits at the boundary, included).
+  expect_equal(risk_reduction_efficiency(1.05, 0.80), (1 - 0.80) / (1.05 - 1))
+
+  # Bound flows through compute_efficiency_scores.
+  d <- simulate_example_outcomes(n_groups = 4, n_draws = 200, seed = 5)
+  d <- build_outcome(d, base_value = "outcome", transfers = "indemnity", premium = "premium")
+  s <- compute_efficiency_scores(d, by = c("group_id", "scenario", "regime"),
+                                 eff_deadband = 0.05)
+  expect_true(all(s$efficiency >= 0 & s$efficiency <= 20, na.rm = TRUE))
+  s2 <- compute_efficiency_scores(d, by = c("group_id", "scenario", "regime"),
+                                  eff_deadband = 0.05, eff_cap = 5)
+  expect_true(all(s2$efficiency <= 5, na.rm = TRUE))
+})
+
+test_that("balance_scenarios prunes units missing from any required cell", {
+  library(data.table)
+  ids <- 1:10
+  dt  <- CJ(id = ids, env = c("E1", "E2"), arm = c("A", "B"))
+  set.seed(11); dt[, m1 := rnorm(.N)]
+
+  # Fully balanced input -> nothing pruned.
+  bal <- balance_scenarios(dt, unit = "id", cell = c("env", "arm"),
+                           require_finite = "m1", verbose = FALSE)
+  expect_equal(uniqueN(bal$id), 10L)
+  expect_equal(nrow(bal), nrow(dt))
+
+  # One NA in a single cell drops that unit from every cell.
+  d2 <- copy(dt); d2[id == 3 & env == "E2" & arm == "B", m1 := NA_real_]
+  b2 <- balance_scenarios(d2, unit = "id", cell = c("env", "arm"),
+                          require_finite = "m1", verbose = FALSE)
+  expect_false(3 %in% b2$id)
+  expect_equal(uniqueN(b2$id), 9L)
+  # Every retained unit covers the full env x arm grid.
+  expect_true(all(b2[, .N, by = id]$N == 4L))
+
+  # allow_missing whitelists the arm == "B" cells, so id 3 is no longer penalised.
+  b3 <- balance_scenarios(d2, unit = "id", cell = c("env", "arm"),
+                          require_finite = "m1",
+                          allow_missing = list(arm = "B"), verbose = FALSE)
+  expect_true(3 %in% b3$id)
+  expect_equal(uniqueN(b3$id), 10L)
+
+  # Report-only leaves the data untouched but attaches the balance report.
+  rep_only <- balance_scenarios(d2, unit = "id", cell = c("env", "arm"),
+                                require_finite = "m1",
+                                prun_to_rebalance = FALSE, verbose = FALSE)
+  expect_equal(nrow(rep_only), nrow(d2))
+  expect_true(3 %in% rep_only$id)
+  expect_false(is.null(attr(rep_only, "balance_report")))
+
+  # Heavy pruning below min_retention aborts.
+  d4 <- copy(dt); d4[id %in% 1:6 & env == "E1" & arm == "A", m1 := NA_real_]
+  expect_error(
+    balance_scenarios(d4, unit = "id", cell = c("env", "arm"),
+                      require_finite = "m1", min_retention = 0.5, verbose = FALSE),
+    "retention")
+})
+
 test_that("score_dictionary documents every scored column", {
   skip_if_not(exists("score_dictionary"))   # built by data-raw/scripts/build_score_dictionary.R
   expect_setequal(names(score_dictionary),

@@ -4,15 +4,22 @@
 \alias{risk_reduction_efficiency}
 \title{Risk Reduction Efficiency Ratio (RRER) -- Equation (3)}
 \usage{
-risk_reduction_efficiency(its, vrs)
+risk_reduction_efficiency(its, vrs, deadband = 0.05, cap = NULL)
 }
 \arguments{
 \item{its}{Income Transfer Score (from \code{income_transfer_score()}).}
 
 \item{vrs}{Variability Reduction Score (from \code{variability_reduction_score()}).}
+
+\item{deadband}{minimum proportional mean gain \code{ITS - 1} required for a nonzero
+score; below it the efficiency is \code{0}. Guards the \code{ITS -> 1} singularity and
+bounds the score at \code{1 / deadband}. Default \code{0.05}; use \code{0} for the raw
+Equation (3) behaviour.}
+
+\item{cap}{optional hard upper bound applied after the ratio (\code{NULL} = none).}
 }
 \value{
-numeric vector in \verb{[0, Inf)}.
+numeric vector in \verb{[0, 1/deadband]} (or \verb{[0, cap]}).
 }
 \description{
 \deqn{RRER = \mathbb{1}(VRS < 1)\,\mathbb{1}(ITS > 1)\,\frac{1 - VRS}{ITS - 1}}
@@ -20,11 +27,19 @@ numeric vector in \verb{[0, Inf)}.
 \details{
 The proportional variability reduction deflated by the proportional income
 (outcome) gain required to achieve it. It is \code{0} unless the configuration both
-lifts the mean (\code{ITS > 1}) and cuts variability (\code{VRS < 1}); otherwise it
-ranges over \verb{[0, Inf)}, with larger values = more efficient risk mitigation.
-Exactly Equation (3) of Tsiboe et al. (2025).
+lifts the mean and cuts variability (\code{VRS < 1}); otherwise it ranges over
+\verb{[0, Inf)}, with larger values = more efficient risk mitigation. Exactly
+Equation (3) of Tsiboe et al. (2025).
+
+Because the denominator \code{ITS - 1} vanishes as \code{ITS -> 1}, a vanishingly small
+mean gain can make the raw ratio explode. \code{deadband} guards this by requiring a
+minimum proportional gain (\code{ITS - 1 >= deadband}) before the ratio is taken;
+below it the score is \code{0}. This also bounds the result: since \code{VRS >= 0}, the
+maximum is \code{1 / deadband} (and \code{(1 - vrs_floor) / deadband} when VRS is
+floored). An optional \code{cap} applies a further hard ceiling.
 }
 \examples{
 risk_reduction_efficiency(its = 1.05, vrs = 0.80)   # both conditions met
 risk_reduction_efficiency(its = 0.98, vrs = 0.80)   # mean not lifted -> 0
+risk_reduction_efficiency(its = 1.001, vrs = 0.50)  # gain below deadband -> 0
 }

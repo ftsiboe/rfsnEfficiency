@@ -145,7 +145,7 @@ A configuration "reduces risk" only when it does **both**: `ITS > 1` *and*
 (RRER)**, Equation (3) of Tsiboe et al. (2025):
 
 $$
-\text{RRER} \;=\; \mathbb{1}(\text{VRS}<1)\,\mathbb{1}(\text{ITS}>1)\;
+\text{RRER} \;=\; \mathbb{I}(\text{VRS}<1)\,\mathbb{1}(\text{ITS}>1)\;
 \frac{1-\text{VRS}}{\text{ITS}-1}.
 $$
 
@@ -158,6 +158,70 @@ volatility earns a *high* one. The same per-dollar logic underlies the
 cost-effectiveness comparison of a proposed PLC buy-up tier in Tsiboe & Turner
 (2025). Crucially, RRER is defined only when the configuration is already
 efficacious: efficiency presumes efficacy.
+
+## Keeping the indices well-posed: economic bounds
+
+ITS, VRS, and RRER are all ratios, so an agent whose no-program baseline has a
+mean or variability near zero can push an index to an implausible magnitude that
+reflects a vanishing denominator rather than any economic effect. Across a
+Monte-Carlo of $\sim\!10^{5}$ heterogeneous agents, a handful of such degenerate
+cases would otherwise dominate the weighted or trimmed aggregates. To keep the
+indicators well-posed, `rfsnEfficiency` winsorizes each index into an
+economically feasible envelope (arguments `its_clamp`, `vrs_clamp`, and the RRER
+`deadband` / `cap`), pulling the degenerate agents to the edge of the plausible
+range instead of letting them set the headline. The defaults, and the economic
+priors behind them, are:
+
+| Index | Bound | Default | Economic reason |
+|---|---|---|---|
+| ITS (`mean_index`) | floor | 0.10 | Subsidized insurance cannot collapse mean revenue |
+| ITS (`mean_index`) | cap | 2.00 | Transfers are a modest share of revenue; the mean cannot double |
+| VRS (`cv_index`, downside, shortfall) | floor | 0.10 | Partial coverage and basis risk leave irreducible residual risk |
+| VRS (`cv_index`, downside, shortfall) | cap | 2.00 | Insurance may add noise, but not multiply variability |
+| RRER (`efficiency`) | floor | 0.00 | Zero unless the program both lifts the mean and cuts risk (definitional) |
+| RRER (`efficiency`) | max | $1/\text{deadband}\approx 18\text{–}20$ | Efficiency is undefined near a zero income transfer |
+
+Index by index:
+
+1. **ITS floor (0.10).** Participation in a subsidized program is rational only
+   when the expected net benefit is non-negative, so premium subsidies roughly
+   offset the loading and $\mathbb{E}[\text{indemnity}+\text{subsidy}]\ge$ the
+   producer premium (Coble & Barnett, 2013; Du et al., 2017). A functioning
+   program therefore lifts, or at worst barely dents, mean revenue; an ITS of
+   0.10 would mean it destroyed 90% of expected revenue, which can only arise
+   from a baseline mean near zero.
+2. **ITS cap (2.00).** Premiums are single-digit percentages of liability and
+   subsidies cover roughly 60% of premium, so the mean uplift is on the order of
+   a few percent. Because indemnities are bounded by liability
+   ($\approx$ coverage $\times$ expected revenue), the mean simply cannot double;
+   $\text{ITS}\gg 1.5$ signals a micro-baseline artifact.
+3. **VRS floor (0.10).** Coverage tops out at $\le 90\%$, deductibles remain, and
+   area endorsements (SCO/ECO) carry basis risk between the county pool and the
+   farm (Tsiboe et al., 2023). That irreducible residual means variability cannot
+   be driven to zero; the floor ("at most $\sim\!90\%$ of variability removed")
+   is consistent with partial coverage and basis risk.
+4. **VRS cap (2.00).** Insurance can add variance in small doses (premium outflow
+   in good years; area basis risk), so mild $\text{VRS}>1$ is admitted, but
+   doubling revenue variability is already extreme and larger values are
+   tiny-baseline artifacts.
+5. **RRER floor (0).** By Equation (3) the score is zero unless the configuration
+   both lifts the mean and cuts variability, so non-negativity is built in, not
+   imposed.
+6. **RRER deadband (0.05).** RRER divides the proportional risk reduction by the
+   proportional income gain, so as the mean gain $\text{ITS}-1\to 0$ the ratio
+   explodes: a program that stabilizes with essentially no transfer looks
+   infinitely efficient. Economically, a mean gain below $\sim\!5\%$ is within the
+   noise of the transfer mechanism and is not a meaningful cost basis to divide
+   by; requiring $\text{ITS}-1\ge 0.05$ before rating efficiency removes that
+   singularity and mechanically bounds the score at $1/0.05=20$ (about 18 given
+   the VRS floor).
+
+These guardrails complement, rather than replace, the robust aggregation the
+package already uses: the clamps fix per-agent artifacts at the source, trimmed
+means with medians reported alongside handle the group aggregation, and the ITS
+deadband removes the one remaining singularity (RRER as $\text{ITS}\to 1$). All
+are optional; set the argument to `NULL` (or `deadband = 0`) to recover the raw
+Equation (3) behaviour.
 
 ## What risk-reduction efficiency adds
 
